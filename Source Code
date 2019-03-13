@@ -1,0 +1,16 @@
+import org.apache.spark.streaming._
+import org.apache.spark.streaming.StreamingContext
+import org.apache.spark._
+object Sstream{
+  def main(args: Array[String]): Unit= {
+    val conf = new SparkConf().setMaster("local[*]").setAppName("WordCount")
+    val ssc = new StreamingContext(conf,Seconds(5))
+    val data = ssc.socketTextStream("localhost",9090)
+    val wc = data.flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_)
+    wc.print()
+  }
+}
+// Install Netcat
+// Use the command - nc -lk 9090
+// You can give the port number of your choice in netcat command. However, just make sure that you are using same port number in the code
+// For more details fllow this link - https://acadgild.com/blog/spark-streaming-tcp-socket
